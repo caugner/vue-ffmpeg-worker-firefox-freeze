@@ -1,18 +1,31 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div v-if="isLoaded">Loading...</div>
+    <div v-else>Ready.</div>
+    <div v-if="time">{{ time }}</div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Worker from "worker-loader!./Worker";
 
 export default {
   name: 'app',
-  components: {
-    HelloWorld
-  }
+  data() {
+    return {
+      isLoaded: false,
+      time: "",
+      interval: null
+    }
+  },
+  mounted() {
+    window.clearInterval(this.interval);
+    this.interval = window.setInterval(() => this.time = new Date(), 100);
+
+    this.worker = new Worker();
+    this.worker.addEventListener('message', () => this.isLoaded = true);
+  },
 }
 </script>
 
